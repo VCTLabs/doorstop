@@ -45,6 +45,10 @@ REVIEW_NEW_ITEMS = True  # automatically review new items during validation
 # Stamping settings
 STAMP_NEW_LINKS = True  # automatically stamp links upon creation
 
+# workflow settings
+PARENT = None  # path = use this path, None = current find parent logic
+DISCARD_EXTRAS = False  # set True to discard extra parents with matching prefix
+
 # Publishing settings
 PUBLISH_CHILD_LINKS = True  # include child links when publishing
 PUBLISH_BODY_LEVELS = True  # include levels on non-header items

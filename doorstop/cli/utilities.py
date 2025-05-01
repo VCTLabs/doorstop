@@ -107,6 +107,10 @@ def configure_settings(args):
         settings.WARN_ALL = args.warn_all is True
     if args.error_all is not None:
         settings.ERROR_ALL = args.error_all is True
+    if hasattr(args, "parent") and args.parent is not None:
+        settings.PARENT = args.parent
+    if args.discard_extras is not None:
+        settings.DISCARD_EXTRAS = args.discard_extras is True
 
     # Parse `add` settings
     if hasattr(args, "server") and args.server is not None:

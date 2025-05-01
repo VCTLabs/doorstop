@@ -81,6 +81,20 @@ def main(args=None):  # pylint: disable=R0915
         **shared,  # type: ignore
     )
     parser.add_argument(
+        "-p",
+        "--parent",
+        metavar="PATH",
+        help="specify path to top-level parent; use with --discard-extras",
+        default=settings.PARENT,
+    )
+    parser.add_argument(
+        "-d",
+        "--discard-extras",
+        action="store_true",
+        help="discard extra parents (same prefix, different path)",
+        default=settings.DISCARD_EXTRAS,
+    )
+    parser.add_argument(
         "-F",
         "--no-reformat",
         action="store_true",
