@@ -147,6 +147,7 @@ class TestTreeStrings(unittest.TestCase):
         self.assertEqual(3, len(tree))
         self.assertTrue(tree.validate())
 
+    @patch("doorstop.settings.DISCARD_EXTRAS", True)
     def test_from_list_discard(self):
         """Verify same prefix parent is discarded."""
         a = MockDocumentSkip(EMPTY)

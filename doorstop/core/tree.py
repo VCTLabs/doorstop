@@ -52,11 +52,30 @@ class Tree(BaseValidatable):  # pylint: disable=R0902
         :return: new :class:`~doorstop.core.tree.Tree`
 
         """
+        def is_parent(doc):
+            """
+            Check document for proper parentage.
+            """
+            default = not settings.PARENT
+            user = settings.PARENT == doc.path
+            return doc.parent is None and default or user
+
+
+        def is_extra(tre, doc):
+            """
+            Check for extra (same prefix) parents.
+            """
+            extra = False
+            if settings.DISCARD_EXTRAS:
+                extra = tre.doc.prefix == doc.prefix and tre.doc.path != doc.path
+            return extra
+
+
         if not documents:
             return Tree(document=None, root=root)
         unplaced = list(documents)
         for document in list(unplaced):
-            if document.parent is None:
+            if is_parent(document):
                 log.info("root of the tree: {}".format(document))
                 tree = Tree(document)
                 document.tree = tree
@@ -69,7 +88,7 @@ class Tree(BaseValidatable):  # pylint: disable=R0902
             count = len(unplaced)
             for document in list(unplaced):
                 if document.parent is None:
-                    if tree.document.prefix == document.prefix and tree.document.path != document.path:
+                    if is_extra(tree, document):
                         log.info("discarded from tree: {}".format(document))
                         unplaced.remove(document)
                         break
