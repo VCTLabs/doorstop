@@ -69,6 +69,10 @@ class Tree(BaseValidatable):  # pylint: disable=R0902
             count = len(unplaced)
             for document in list(unplaced):
                 if document.parent is None:
+                    if document.prefix == tree.document.prefix:
+                        log.info("discarded from tree: {}".format(document))
+                        unplaced.remove(document)
+                        break
                     log.info("root of the tree: {}".format(document))
                     message = "multiple root documents:\n- {}: {}\n- {}: {}".format(
                         tree.document.prefix,
