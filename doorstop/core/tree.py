@@ -41,7 +41,8 @@ class Tree(BaseValidatable):  # pylint: disable=R0902
 
     @staticmethod
     def from_list(documents, root=None):
-        """Initialize a new tree from a list of documents.
+        """
+        Initialize a new tree from a list of documents.
 
         :param documents: list of :class:`~doorstop.core.document.Document`
         :param root: path to root of the project
@@ -50,8 +51,28 @@ class Tree(BaseValidatable):  # pylint: disable=R0902
             cannot be built
 
         :return: new :class:`~doorstop.core.tree.Tree`
-
         """
+
+        def _filter_children_by_prefix(docs_from: List) -> List:
+            """
+            If child documents are found, filter them by document prefix
+            and only keep the document with longer path when a duplicate
+            prefix is found.
+
+            :param documents: list of :class:`~doorstop.core.document.Document`
+            :return: filtered list of :class:`~doorstop.core.document.Document`
+            """
+            seen: Dict = {}
+            for doc in docs_from:
+                if doc.prefix in seen and len(doc.path) > len(seen[doc.prefix].path):
+                    log.info("filtered from tree: {}".format(seen[doc.prefix]))
+                    seen[doc.prefix] = doc  # update previous doc, or
+                if doc.prefix not in seen:
+                    seen.update({doc.prefix: doc})  # add new doc
+            log.info("filtered result: {}".format(seen))
+            return list(seen.values())
+
+
         if not documents:
             return Tree(document=None, root=root)
         unplaced = list(documents)
@@ -64,6 +85,8 @@ class Tree(BaseValidatable):  # pylint: disable=R0902
                 break
         else:
             raise DoorstopError("no root document")
+
+        unplaced = _filter_children_by_prefix(unplaced)
 
         while unplaced:
             count = len(unplaced)

@@ -162,6 +162,25 @@ class TestTreeStrings(unittest.TestCase):
         self.assertEqual(2, len(tree))
         self.assertTrue(tree.validate())
 
+    def test_from_list_filter(self):
+        """Verify same prefix child is filtered."""
+        a = MockDocumentSkip(EMPTY)
+        a.prefix = "A"  # type: ignore
+        b = MockDocumentSkip(EMPTY)
+        b.prefix = "B"  # type: ignore
+        b.parent = "A"  # type: ignore
+        c = MockDocumentSkip(EMPTY)
+        c.prefix = "B"  # type: ignore
+        c.parent = "A"  # type: ignore
+        c.path = c.path + "/cempty"  # type: ignore
+        docs = [a, b, c]
+        tree = Tree.from_list(docs)
+        self.assertEqual(2, len(tree))
+        self.assertTrue(tree.validate())
+        self.assertIn('/cempty', tree.children[0].document.path)
+        #print(tree)
+        #print(tree.children)
+
     def test_from_list_no_root(self):
         """Verify an error occurs when the tree has no root."""
         a = MockDocumentSkip(EMPTY)
