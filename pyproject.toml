@@ -1,19 +1,26 @@
-[tool.poetry]
+[build-system]
+requires = [
+    "setuptools>= 61.0.0",
+    "setuptools_scm[toml]>=7.0",
+]
 
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "doorstop"
-version = "3.0.2"
+dynamic = ["version"]
+#version = "3.0.2"
 description = "Requirements management using version control."
 
-license = "LGPLv3"
+license = "LGPL-3.0-or-later"
 
-authors = ["Jace Browning <jacebrowning@gmail.com>"]
+authors = [
+  {name = "Jace Browning"},
+  {email = "jacebrowning@gmail.com"},
+]
 
 readme = "README.md"
-exclude = ["**/tests/**"]
-
-homepage = "https://pypi.org/project/Doorstop"
-documentation = "https://doorstop.readthedocs.io"
-repository = "https://github.com/doorstop-dev/doorstop"
+#exclude = ["**/tests/**"]
 
 keywords = [
   "requirements-management",
@@ -28,7 +35,6 @@ keywords = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -42,73 +48,109 @@ classifiers = [
     "Topic :: Text Processing :: Markup",
 ]
 
-[tool.poetry.dependencies]
+dependencies = [
+    "legacy-cgi",
+    "munch[yaml]",
+    "markdown>=3.3.3",
+    "bottle~=0.12.25",
+    "requests>=2.0",
+    "python-frontmatter==1.0",
+    "python-markdown-math~=0.6",
+    "plantuml-markdown==3.4.2",
+    "six",
+    "openpyxl>=3.1.2",
+    "verchew==3.4.2",
+]
 
-python = "<3.14,>=3.9"
+requires-python = ">=3.8"
 
-pyyaml = "^6.0"
-markdown = "^3.3.3"
-bottle = "~0.13.4"
-requests = "^2.0"
-python-frontmatter = "^1.0"
-python-markdown-math = "~0.6"
-plantuml-markdown = "^3.4.2"
-six = "*" # fixes https://github.com/dougn/python-plantuml/issues/11
-openpyxl = ">=3.1.2"
-verchew = "^3.4.2"
+[project.optional-dependencies]
+dev = [
+    "isort == 5.12",
+    "mypy >= 1.1.1",
+    "black == 24.3",
+    "pylint ~= 3.2.0",
+    "pydocstyle",
+]
+cov = [
+    "coverage[toml]",
+    "coverage_python_version",
+]
+test = [
+    "pytest == 6.2.5",
+    "pytest-cov",
+    "pytest-expecter",
+    "pytest-sugar",
+    "WebTest == 3.0.0",
+]
 
-[tool.poetry.dev-dependencies]
-
-# Formatters
-black = "^24.3"
-isort = "^5.12"
-
-# Linters
-mypy = ">=1.1.1"
-pydocstyle = "*"
-pylint = "~3.2.0"
-types-markdown = "*"
-types-pyyaml = "*"
-types-requests = "*"
-types-setuptools = "*"
-
-# Testing
-pytest = "^6.2.5"
-pytest-cov = "*"
-pytest-expecter = "*"
-pytest-sugar = "*"
-webtest = "^3.0.0"
-diff-cover = "^8.0.3"
-
-# Reports
-coveragespace = "^6.1"
-
-# Documentation
-mkdocs = "^1.5"
-pygments = "*"
-
-# Tooling
-pyinstaller = "*"
-sniffer = "*"
-macfsevents = { version = "*", platform = "darwin", markers = "python_version < '3.13'" }
-pync = { version = "*", platform = "darwin" }
-rope = "*"
-
-[tool.poetry.scripts]
-
+[project.scripts]
 doorstop = "doorstop.cli.main:main"
 doorstop-gui = "doorstop.gui.main:main"
 doorstop-server = "doorstop.server.main:main"
 
-[tool.black]
+[project.urls]
+Homepage = "https://pypi.org/project/Doorstop"
+Documentation = "https://doorstop.readthedocs.io"
+Repository = "https://github.com/doorstop-dev/doorstop"
 
+# this finds all the pkgs when not using src/ layout
+[tool.setuptools.package-dir]
+doorstop = "doorstop"
+
+# this includes all the package data files
+[tool.setuptools.package-data]
+"*" = [
+    "*.cls",
+    "*.css",
+    "*.js",
+    "*.png",
+    "*.rst",
+    "*.txt",
+    "*.tpl",
+    "*.woff",
+    "*.yml",
+]
+
+[tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["**/tests/**"]
+norecursedirs = ["reqs/*", "build/*"]
+log_cli =  false
+doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+addopts = "-ra -q -p no:warnings"
+
+[tool.coverage.run]
+branch = true
+source = ["doorstop"]
+plugins = ["coverage_python_version"]
+omit = [
+    "scent.py",
+    ".tox",
+    ".venv",
+]
+[tool.coverage.paths]
+source = ["doorstop"]
+
+[tool.coverage.report]
+fail_under = 75
+show_missing = true
+ignore_errors = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "raise AssertionError",
+    "if typing.TYPE_CHECKING:",
+    "if TYPE_CHECKING:",
+    "except DistributionNotFound",
+]
+[tool.coverage.html]
+show_contexts = true
+
+[tool.black]
 quiet = true
 
 [tool.isort]
-
 profile = "black"
-
-[build-system]
-
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
